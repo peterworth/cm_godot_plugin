@@ -1,0 +1,17 @@
+[config]
+name="CmGodotPlugin"
+binary="libcm_godot_plugin.arm64-iphone.release.a"
+
+initialization="cm_godot_plugin_init"
+deinitialization="cm_godot_plugin_deinit"
+
+[dependencies]
+linked=[]
+embedded=[]
+system=[]
+
+capabilities=[]
+
+files=[]
+
+[plist]
