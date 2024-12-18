@@ -5,17 +5,26 @@
 #include "core/object/object.h"
 #include "core/object/class_db.h"
 
+#import <CoreHaptics/CoreHaptics.h>
+
 class CmGodotPlugin : public Object {
     GDCLASS(CmGodotPlugin, Object);
     
     static void _bind_methods();
     
-public:
+    BOOL supportsHaptics;
+    CHHapticEngine* engine;
+    NSMutableArray* players;
     
-    Error foo();
+public:
     
     CmGodotPlugin();
     ~CmGodotPlugin();
+    
+    String hello();
+    
+    void haptics_make_player(float duration, float intensity, float sharpness);
+    void haptics_buzz(int playerIndex);
 };
 
 #endif

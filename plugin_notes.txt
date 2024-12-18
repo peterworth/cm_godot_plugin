@@ -1,0 +1,122 @@
+
+NOTE one of the things that caused problems was godot 4.3 instead of 4.2
+(some missing symbols on exported project build)
+so keep to 4.2 for now
+
+NOTE when you export from godot:
+- have to change signing to Apple Developer
+- have to add a dummy.swift file to target (file is there but not added to target)
+
+
+---
+
+
+this guide has some useful bits but it didn't work for me:
+
+https://docs.godotengine.org/en/stable/tutorials/platform/ios/ios_plugin.html
+
+and here:
+
+https://github.com/naithar/godot_ios_plugin/tree/master
+
+but i had to change some things, e.g. "core/engine.h" to "core/config/engine.h" etc
+
+this project builds now. seems to be ok to just build from xcode,
+
+and then in xcode -> product -> show build folder in finder
+
+to get the .a file
+and .gdip file shouldnt need changing much
+
+
+---
+
+NOTE if need to send a signal from obj-c code to godot, check around 12 min mark here:
+
+https://www.youtube.com/watch?v=Y6Iq71zZO10
+
+
+
+---
+
+2 ways we could do storekit bits
+
+- if "await" in swift works via godot call then we call and wait for return
+
+- otherwise we could fire off a request from godot,
+then swift code maintains results internally,
+and godot polls for results in a separate func
+
+---
+
+
+attempt 1:
+
+godot funcs:
+
+fetch_products([product id strings])
+-> return array of dicts of successfully retrieved products,
+each item in array has:
+"id" string
+"display price" string
+"price" float
+(means they're ready to be purchased via purchase func later)
+
+...
+
+
+
+---
+
+we need to do:
+
+fetchProducts()
+
+then from the returned products, do:
+
+try await result = product.purchase()
+
+which gives a result:
+
+switch result {
+        case .success(let verificationResult):
+            if let transaction = try? verificationResult.payloadValue {
+               // ** unlock content **
+               await transaction.finish()
+            }
+        case .userCancelled:
+            break
+        case .pending:
+            break
+        @unknown default:
+            break
+
+so AFTER unlocking content:
+
+await transaction.finish()
+
+
+-----
+
+
+iaps:
+
+https://developer.apple.com/documentation/storekit/implementing-a-store-in-your-app-using-the-storekit-api?language=objc
+
+
+
+testing iaps:
+
+https://developer.apple.com/documentation/storekit/testing-at-all-stages-of-development-with-xcode-and-the-sandbox?language=objc
+
+
+
+checking subs state etc?:
+
+https://developer.apple.com/documentation/storekit/supporting-business-model-changes-by-using-the-app-transaction?language=objc
+
+
+
+adnetwork attribution:
+
+https://developer.apple.com/documentation/storekit/ad-network-attribution?language=objc

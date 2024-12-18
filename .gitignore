@@ -2,6 +2,7 @@
 *.d
 *.o
 /bin/*
+*.dblite
 
 # Xcode
 #
